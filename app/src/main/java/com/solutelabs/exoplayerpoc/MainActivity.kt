@@ -15,6 +15,7 @@ import com.solutelabs.exoplayerpoc.MediaPlayerDelegateImpl.backwordMediaPlayer
 import com.solutelabs.exoplayerpoc.MediaPlayerDelegateImpl.destroyPlayer
 import com.solutelabs.exoplayerpoc.MediaPlayerDelegateImpl.forwordMediaPlayer
 import com.solutelabs.exoplayerpoc.MediaPlayerDelegateImpl.initializedMediaPlayer
+import com.solutelabs.exoplayerpoc.MediaPlayerDelegateImpl.initializedMediaPlayerWithHLS
 import com.solutelabs.exoplayerpoc.MediaPlayerDelegateImpl.onPlay
 
 class MainActivity : AppCompatActivity() {
@@ -49,7 +50,9 @@ class MainActivity : AppCompatActivity() {
     private fun mediaPlayerSetup() {
 
 
-        initializedMediaPlayer(this, playerView,"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")
+        //initializedMediaPlayer(this, playerView,"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")
+        initializedMediaPlayer(this, playerView,"https://ndtvod.pc.cdn.bitgravity.com/23372/hls/SMIDJAIKUMARNTPC27112024_199307_12885_5000/master.m3u8")
+        //initializedMediaPlayerWithHLS(this, playerView,"https://ndtvod.pc.cdn.bitgravity.com/23372/hls/SMIDJAIKUMARNTPC27112024_199307_12885_5000/master.m3u8")
         pipbutton.setOnClickListener { onUserLeaveHint() }
         forword10Sec?.setOnClickListener { forwordMediaPlayer(25000) }
         backword10Sec?.setOnClickListener { backwordMediaPlayer(25000) }
@@ -92,7 +95,7 @@ class MainActivity : AppCompatActivity() {
 
         if (isInPictureInPictureMode) {
             // Hide UI controls for PiP mode
-            //playerView.useController = false
+            playerView.useController = true
             pipbutton.visibility = Button.GONE
             forword10Sec.visibility = Button.GONE
             backword10Sec.visibility = Button.GONE
