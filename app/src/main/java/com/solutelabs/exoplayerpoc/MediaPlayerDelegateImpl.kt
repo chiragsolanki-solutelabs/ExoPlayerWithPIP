@@ -13,23 +13,26 @@ import androidx.media3.ui.PlayerView
 
 
 interface MediaPlayerDelegate {
-    fun initializedMediaPlayer(context: Context, playerView: PlayerView,url:String)
-    fun initializedMediaPlayerWithHLS(context: Context, playerView: PlayerView,url:String)
-    fun forwordMediaPlayer(duration:Long)
-    fun backwordMediaPlayer(duration:Long)
-    fun onPlay()
-    fun onPause()
+    fun initializedMediaPlayer(context: Context, playerView: PlayerView, url: String)
+    fun initializedMediaPlayerWithHLS(context: Context, playerView: PlayerView, url: String)
+    fun forwordMediaPlayer(duration: Long)
+    fun backwordMediaPlayer(duration: Long)
+    fun onExoPlay()
+    fun onExoPause()
+    fun onExoPlayPause()
     fun destroyPlayer()
+    fun isExoPlaying(): Boolean
     /*@RequiresApi(Build.VERSION_CODES.O)
     fun startPictureInPicture(activity: AppCompatActivity)*/
 
 }
-object MediaPlayerDelegateImpl: MediaPlayerDelegate {
 
-    private var player: ExoPlayer?=null
+object MediaPlayerDelegateImpl : MediaPlayerDelegate {
+
+    private var player: ExoPlayer? = null
     private var playerView: PlayerView? = null
 
-    override fun initializedMediaPlayer(context: Context, playerView: PlayerView,url:String) {
+    override fun initializedMediaPlayer(context: Context, playerView: PlayerView, url: String) {
         this.playerView = playerView
         player = ExoPlayer.Builder(context).build().also { exoPlayer ->
             playerView.player = exoPlayer
@@ -42,15 +45,19 @@ object MediaPlayerDelegateImpl: MediaPlayerDelegate {
 
 
     @OptIn(UnstableApi::class)
-    override fun initializedMediaPlayerWithHLS(context: Context, playerView: PlayerView,url:String) {
+    override fun initializedMediaPlayerWithHLS(
+        context: Context,
+        playerView: PlayerView,
+        url: String
+    ) {
         this.playerView = playerView
-       /* val dataSourceFactory: DataSource.Factory = DefaultHttpDataSource.Factory()
-// Create a HLS media source pointing to a playlist uri.
-        val hlsMediaSource =
-            HlsMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(url))
-        player = ExoPlayer.Builder(context).build().also { exoPlayer ->
-            playerView.player = exoPlayer
-            *//*val mediaItem = MediaItem.fromUri(Uri.parse(url))
+        /* val dataSourceFactory: DataSource.Factory = DefaultHttpDataSource.Factory()
+ // Create a HLS media source pointing to a playlist uri.
+         val hlsMediaSource =
+             HlsMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(url))
+         player = ExoPlayer.Builder(context).build().also { exoPlayer ->
+             playerView.player = exoPlayer
+             *//*val mediaItem = MediaItem.fromUri(Uri.parse(url))
             exoPlayer.setMediaItem(mediaItem)*//*
             exoPlayer.setMediaSource(hlsMediaSource)
             exoPlayer.prepare()
@@ -59,33 +66,45 @@ object MediaPlayerDelegateImpl: MediaPlayerDelegate {
     }
 
 
-    override fun backwordMediaPlayer(duration:Long) {
+    override fun backwordMediaPlayer(duration: Long) {
         player?.let { it.seekTo(it.currentPosition - duration) }
     }
 
-    override fun forwordMediaPlayer(duration:Long) {
+    override fun forwordMediaPlayer(duration: Long) {
         player?.let { it.seekTo(it.currentPosition + duration) }
     }
 
-    override fun onPlay() {
+    override fun onExoPlay() {
         player?.play()
     }
 
-    override fun onPause() {
+    override fun onExoPause() {
         player?.pause()
+    }
+
+    override fun onExoPlayPause() {
+        if (player?.isPlaying == true) {
+            onExoPause()
+        } else {
+            onExoPlay()
+        }
     }
 
     override fun destroyPlayer() {
         player?.release()
     }
 
-   /* @RequiresApi(Build.VERSION_CODES.O)
-    override fun startPictureInPicture(activity: AppCompatActivity) {
-        val aspectRatio = Rational(16, 9) // Set your desired aspect ratio
-        val pipParams = PictureInPictureParams.Builder()
-            .setAspectRatio(aspectRatio)
-            .build()
-        activity.enterPictureInPictureMode(pipParams)
-    }*/
+    override fun isExoPlaying(): Boolean {
+        return player?.isPlaying ?: false
+    }
+
+    /* @RequiresApi(Build.VERSION_CODES.O)
+     override fun startPictureInPicture(activity: AppCompatActivity) {
+         val aspectRatio = Rational(16, 9) // Set your desired aspect ratio
+         val pipParams = PictureInPictureParams.Builder()
+             .setAspectRatio(aspectRatio)
+             .build()
+         activity.enterPictureInPictureMode(pipParams)
+     }*/
 
 }
